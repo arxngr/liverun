@@ -11,8 +11,7 @@ ProcessManager *g_processManager = nullptr;
 livrn::Reloader hotReloader;
 
 void signalHandler(int signal) {
-  std::cout << "\n[hotreload] Received signal " << signal
-            << ", cleaning up...\n";
+  std::cout << "\n[liverun] Received signal " << signal << ", cleaning up...\n";
   if (g_processManager) {
     g_processManager->cleanup();
   }
@@ -20,11 +19,11 @@ void signalHandler(int signal) {
 }
 
 void Core::printUsage() {
-  std::cerr << "Usage: ./hotreload <mode> [args...]\n";
+  std::cerr << "Usage: ./liverun <mode> [args...]\n";
   std::cerr << "Modes:\n";
   std::cerr << "  interpret <interpreter> <script>\n";
   std::cerr << "  compile <binary> <compile_cmd>\n";
-  std::cerr << "  run <compile_cmd> <run_cmd>\n";
+  std::cerr << "  custom <compile_cmd> <run_cmd>\n";
 }
 
 void Core::setupSignalHandlers() {
@@ -60,7 +59,7 @@ int Core::run(int argc, char *argv[]) {
 
     } else if (mode == "custom") {
       if (argc < 4) {
-        std::cerr << "Usage: ./liverun run <compile_cmd> <run_cmd>\n";
+        std::cerr << "Usage: ./liverun custom <compile_cmd> <run_cmd>\n";
         return 1;
       }
       return hotReloader.runCommandMode(argv[2], argv[3]);
