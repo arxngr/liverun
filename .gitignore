@@ -32,4 +32,11 @@ Thumbs.db
 *.dylib
 *.a
 *.lib
+CTestTestfile.cmake
+*.cmake
+/bin/ 
+/_deps/
+/lib/
+liverun_tests
+liverun
 
