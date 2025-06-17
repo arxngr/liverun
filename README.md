@@ -2,8 +2,6 @@
 
 A fast, lightweight hot reload tool for development workflows. liverun automatically monitors your source files and restarts your application when changes are detected, supporting multiple programming languages and build systems.
 
-## Core Diagram
-![liverun_diagram drawio](https://github.com/user-attachments/assets/65976d3d-b32b-4cc9-8baa-b32c181aad37)
 
 ## ✨ Features
 
