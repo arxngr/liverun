@@ -72,13 +72,18 @@ liverun command "npm run build" "npm start"
 
 ---
 
+
+
 > ⚠️  **Note**
+>
+
 > Make sure to organize your files within a specific folder structure.
 > If your target file is placed directly in the root directory, `liverun` will monitor **all folders** at the root level, which may lead to unnecessary reloads.
 
+
+
 ---
 
-Let me know if you'd like this styled as a collapsible or badge format!
 
 ## 💡 Examples
 
