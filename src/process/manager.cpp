@@ -1,5 +1,5 @@
 #include "manager.h"
-
+#include "../logger.h"
 namespace livrn {
 
 void ProcessManager::killProcessGracefully(pid_t &pid,
@@ -7,8 +7,7 @@ void ProcessManager::killProcessGracefully(pid_t &pid,
   if (pid <= 0)
     return;
 
-  std::cout << "[livrn] Stopping " << processName << " (PID: " << pid
-            << ")...\n";
+  livrn::Logger::warn("Stopping ", processName, " (PID: ", pid, ")...");
 
   int status;
   pid_t result = waitpid(pid, &status, WNOHANG);
@@ -22,14 +21,14 @@ void ProcessManager::killProcessGracefully(pid_t &pid,
          ++i) {
       result = waitpid(pid, &status, WNOHANG);
       if (result == pid) {
-        std::cout << "[livrn] " << processName << " stopped gracefully\n";
+        livrn::Logger::info(processName, " stopped gracefully");
         pid = -1;
         return;
       }
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
-    std::cout << "[livrn] Force killing " << processName << "...\n";
+    livrn::Logger::error("Force killing ", processName);
     kill(pid, SIGKILL);
     waitpid(pid, nullptr, 0);
   }
@@ -99,7 +98,7 @@ bool ProcessManager::startBinary(const std::string &binary) {
 
 bool ProcessManager::startCommand(const std::string &cmd) {
   if (!livrn::Parser::isCommandSafe(cmd)) {
-    std::cerr << "[security] Unsafe command rejected: " << cmd << "\n";
+    livrn::Logger::warn("Unsafe command, rejected");
     return false;
   }
 

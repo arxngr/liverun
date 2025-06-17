@@ -1,4 +1,5 @@
 #include "reloader.h"
+#include "logger.h"
 #include <chrono>
 #include <iostream>
 #include <thread>
@@ -15,7 +16,7 @@ int Reloader::runInterpretMode(const std::string &interpreter,
                                const std::string &script) {
   try {
     if (!processManager.startInterpreter(interpreter, script)) {
-      std::cerr << "[hotreload] Failed to start interpreter\n";
+      livrn::Logger::warn("Failed to start interpreter");
       return 1;
     }
 
@@ -24,14 +25,13 @@ int Reloader::runInterpretMode(const std::string &interpreter,
           std::chrono::milliseconds(Config::POLL_INTERVAL_MS));
 
       if (monitor.hasAnyFileChanged()) {
-        std::cout << "[hotreload] Change detected. Restarting...\n";
+        livrn::Logger::info("Change detected. Restarting...");
         processManager.killChild();
         processManager.startInterpreter(interpreter, script);
       }
     }
   } catch (const std::exception &e) {
-    std::cerr << "[error] Exception in interpret mode: " << e.what()
-              << std::endl;
+    livrn::Logger::error("Expection in interpreter mode: ", e.what());
     processManager.cleanup();
     return 1;
   }
@@ -41,12 +41,12 @@ int Reloader::runCompileMode(const std::string &binary,
                              const std::string &compileCmd) {
   try {
     if (!compiler.compileSync(compileCmd)) {
-      std::cerr << "[hotreload] Initial compilation failed\n";
+      livrn::Logger::error("Initial compilation failed");
       return 1;
     }
 
     if (!processManager.startBinary(binary)) {
-      std::cerr << "[hotreload] Failed to start binary\n";
+      livrn::Logger::error("Failed to start binary");
       return 1;
     }
 
@@ -55,18 +55,18 @@ int Reloader::runCompileMode(const std::string &binary,
           std::chrono::milliseconds(Config::POLL_INTERVAL_MS));
 
       if (monitor.hasAnyFileChanged()) {
-        std::cout << "[hotreload] Source change detected\n";
+        livrn::Logger::info("Source change detected");
         processManager.killChild();
 
         if (compiler.compileSync(compileCmd)) {
           processManager.startBinary(binary);
         } else {
-          std::cerr << "[hotreload] Compilation failed\n";
+          livrn::Logger::error("Compilation failed");
         }
       }
     }
   } catch (const std::exception &e) {
-    std::cerr << "[error] Exception in compile mode: " << e.what() << std::endl;
+    livrn::Logger::error("Exception in compile mode: ", e.what());
     processManager.cleanup();
     return 1;
   }
@@ -74,7 +74,7 @@ int Reloader::runCompileMode(const std::string &binary,
 
 int Reloader::runCommandMode(const std::vector<std::string> &commands) {
   if (commands.size() < 1) {
-    std::cerr << "[hotreload] At least one command (run) is required\n";
+    livrn::Logger::error("At least one command (run) is required");
     return 1;
   }
 
@@ -82,51 +82,41 @@ int Reloader::runCommandMode(const std::vector<std::string> &commands) {
   const std::string &runCmd = commands[lastIdx];
 
   try {
-    // Run setup/compile commands
     for (size_t i = 0; i < lastIdx; ++i) {
-      std::cout << "[hotreload] Running setup: " << commands[i] << std::endl;
+      livrn::Logger::info("Running setup: ", commands[i]);
       if (!compiler.compileSync(commands[i])) {
-        std::cerr << "[hotreload] Setup command failed: " << commands[i]
-                  << "\n";
+        livrn::Logger::error("Setup command failed: ", commands[i]);
         return 1;
       }
     }
 
-    std::cout << "[hotreload] Starting application: " << runCmd << std::endl;
+    livrn::Logger::info("Starting application... ", runCmd);
     if (!processManager.startCommand(runCmd)) {
-      std::cerr << "[hotreload] Failed to start application\n";
+      livrn::Logger::error("Failed to start application");
       return 1;
     }
 
-    // Hot reload loop
     while (true) {
       std::this_thread::sleep_for(
           std::chrono::milliseconds(Config::POLL_INTERVAL_MS));
 
       if (monitor.hasAnyFileChanged()) {
-        std::cout << "[hotreload] Change detected. Restarting...\n";
+        livrn::Logger::info("Change detected. Restarting...");
         processManager.killChild();
 
-        // Re-run setup commands
         for (size_t i = 0; i < lastIdx; ++i) {
-          std::cout << "[hotreload] Re-running setup: " << commands[i]
-                    << std::endl;
           if (!compiler.compileSync(commands[i])) {
-            std::cerr << "[hotreload] Setup command failed: " << commands[i]
-                      << "\n";
+            livrn::Logger::error("Setup command failed: ", commands[i]);
             break;
           }
         }
 
-        // Restart application
-        std::cout << "[hotreload] Restarting application: " << runCmd
-                  << std::endl;
         processManager.startCommand(runCmd);
       }
     }
 
   } catch (const std::exception &e) {
-    std::cerr << "[error] Exception: " << e.what() << std::endl;
+    livrn::Logger::error("Exception in custom mode: ", e.what());
     processManager.cleanup();
     return 1;
   }

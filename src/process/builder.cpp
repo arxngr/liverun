@@ -1,5 +1,6 @@
 #include "builder.h"
 #include "../cmd/command.h"
+#include "../logger.h"
 #include "../util/parser.h"
 
 namespace livrn {
@@ -7,12 +8,11 @@ ProcessBuilder::ProcessBuilder(ProcessManager &pm) { (void)pm; }
 
 bool ProcessBuilder::compileSync(const std::string &cmd) {
   if (!livrn::Parser::isCommandSafe(cmd)) {
-    std::cerr << "[livrn] Unsafe command rejected: " << cmd << std::endl;
+    livrn::Logger::warn("Unsafe command, rejected");
     return false;
   }
 
-  std::cout << "[livrn] Compiling: " << cmd << std::endl;
-
+  livrn::Logger::info("Compiling");
   auto args = livrn::Command::parseCommand(cmd);
   if (args.empty())
     return false;

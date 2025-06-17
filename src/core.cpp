@@ -1,4 +1,5 @@
 #include "core.h"
+#include "logger.h"
 #include "process/manager.h"
 #include "reloader.h"
 #include <csignal>
@@ -11,7 +12,7 @@ ProcessManager *g_processManager = nullptr;
 livrn::Reloader hotReloader;
 
 void signalHandler(int signal) {
-  std::cout << "\n[liverun] Received signal " << signal << ", cleaning up...\n";
+  livrn::Logger::debug("Received signal ", signal, ", cleaning up...");
   if (g_processManager) {
     g_processManager->cleanup();
   }
@@ -23,7 +24,7 @@ void Core::printUsage() {
   std::cerr << "Modes:\n";
   std::cerr << "  interpret <interpreter> <script>\n";
   std::cerr << "  compile <binary> <compile_cmd>\n";
-  std::cerr << "  custom <compile_cmd> <run_cmd>\n";
+  std::cerr << "  custom <args1> <args2> [...]\n";
 }
 
 void Core::setupSignalHandlers() {
@@ -45,21 +46,22 @@ int Core::run(int argc, char *argv[]) {
   try {
     if (mode == "interpret") {
       if (argc < 4) {
-        std::cerr << "Usage: ./liverun interpret <interpreter> <script>\n";
+        livrn::Logger::error(
+            "Usage: ./liverun interpret <interpreter> <script>");
         return 1;
       }
       return hotReloader.runInterpretMode(argv[2], argv[3]);
 
     } else if (mode == "compile") {
       if (argc < 4) {
-        std::cerr << "Usage: ./liverun compile <binary> <compile_cmd>\n";
+        livrn::Logger::error("Usage: ./liverun compile <binary> <compile_cmd>");
         return 1;
       }
       return hotReloader.runCompileMode(argv[2], argv[3]);
 
     } else if (mode == "custom") {
       if (argc < 3) {
-        std::cerr << "Usage: ./liverun custom <command1> [command2] [...]\n";
+        livrn::Logger::error("Usage: ./liverun custom <args1> <args2> [...]");
         return 1;
       }
 
@@ -76,7 +78,7 @@ int Core::run(int argc, char *argv[]) {
       return 1;
     }
   } catch (const std::exception &e) {
-    std::cerr << "[error] Unhandled exception: " << e.what() << std::endl;
+    livrn::Logger::error("Unhandled exception: ", e.what());
     return 1;
   }
 }
