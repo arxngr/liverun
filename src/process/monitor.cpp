@@ -1,4 +1,5 @@
 #include "monitor.h"
+#include "../logger.h"
 
 namespace livrn {
 
@@ -10,8 +11,7 @@ void ProcessMonitor::scanDirectory(const fs::path &dir) {
 
       std::string pathStr = entry.path().string();
       if (!livrn::Parser::isPathSafe(pathStr)) {
-        std::cout << "[security] Skipping unsafe path: " << pathStr
-                  << std::endl;
+        livrn::Logger::warn("Skipping unsafe path: ", pathStr);
         continue;
       }
 
