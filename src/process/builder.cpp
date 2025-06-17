@@ -3,7 +3,7 @@
 #include "../util/parser.h"
 
 namespace livrn {
-ProcessBuilder::ProcessBuilder(ProcessManager &pm) : processManager(pm) {}
+ProcessBuilder::ProcessBuilder(ProcessManager &pm) { (void)pm; }
 
 bool ProcessBuilder::compileSync(const std::string &cmd) {
   if (!livrn::Parser::isCommandSafe(cmd)) {
