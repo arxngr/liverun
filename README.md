@@ -43,7 +43,10 @@ chmod +x scripts/*.sh
 
 ## 📖 Usage
 
-https://github.com/user-attachments/assets/c5e21988-2beb-4a09-bd5d-3f001977cbfc
+
+https://github.com/user-attachments/assets/2ada0070-9ad1-488e-871f-011fbfd41fb7
+
+
 
 liverun operates in three different modes depending on your development workflow:
 
