@@ -24,7 +24,7 @@ void Core::printUsage() {
   std::cerr << "Modes:\n";
   std::cerr << "  interpret <interpreter> <script>\n";
   std::cerr << "  compile <binary> <compile_cmd>\n";
-  std::cerr << "  custom <args1> <args2> [...]\n";
+  std::cerr << "  command <args1> <args2> [...]\n";
 }
 
 void Core::setupSignalHandlers() {
@@ -59,9 +59,9 @@ int Core::run(int argc, char *argv[]) {
       }
       return hotReloader.runCompileMode(argv[2], argv[3]);
 
-    } else if (mode == "custom") {
+    } else if (mode == "command") {
       if (argc < 3) {
-        livrn::Logger::error("Usage: ./liverun custom <args1> <args2> [...]");
+        livrn::Logger::error("Usage: ./liverun command <args1> <args2> [...]");
         return 1;
       }
 
