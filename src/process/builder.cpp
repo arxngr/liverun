@@ -35,4 +35,5 @@ bool ProcessBuilder::compileSync(const std::string &cmd) {
 
   return false;
 }
+
 } // namespace livrn

@@ -58,11 +58,17 @@ int Core::run(int argc, char *argv[]) {
       return hotReloader.runCompileMode(argv[2], argv[3]);
 
     } else if (mode == "custom") {
-      if (argc < 4) {
-        std::cerr << "Usage: ./liverun custom <compile_cmd> <run_cmd>\n";
+      if (argc < 3) {
+        std::cerr << "Usage: ./liverun custom <command1> [command2] [...]\n";
         return 1;
       }
-      return hotReloader.runCommandMode(argv[2], argv[3]);
+
+      std::vector<std::string> commands;
+      for (int i = 2; i < argc; ++i) {
+        commands.emplace_back(argv[i]);
+      }
+
+      return hotReloader.runCommandMode(commands);
 
     } else {
       std::cerr << "Unknown mode: " << mode << "\n";

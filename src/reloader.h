@@ -21,7 +21,7 @@ public:
   int runInterpretMode(const std::string &interpreter,
                        const std::string &script);
   int runCompileMode(const std::string &binary, const std::string &compileCmd);
-  int runCommandMode(const std::string &compileCmd, const std::string &runCmd);
+  int runCommandMode(const std::vector<std::string> &commands);
 };
 
 } // namespace livrn
