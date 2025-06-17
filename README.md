@@ -2,6 +2,7 @@
 
 A fast, lightweight hot reload tool for development workflows. liverun automatically monitors your source files and restarts your application when changes are detected, supporting multiple programming languages and build systems.
 
+
 ## ✨ Features
 
 - **Multi-language support**: Works with interpreted languages (Python, Node.js, etc.) and compiled languages (C++, Go, Rust, etc.)
@@ -11,7 +12,11 @@ A fast, lightweight hot reload tool for development workflows. liverun automatic
   - Command mode for custom build/run workflows
 - **Cross-platform**: Works on Linux, macOS, and other Unix-like systems
 
+
+
+
 ## 🚀 Installation
+
 
 ### Build from Source
 
@@ -38,7 +43,9 @@ chmod +x scripts/*.sh
 
 ## 📖 Usage
 
-live operates in three different modes depending on your development workflow:
+https://github.com/user-attachments/assets/c5e21988-2beb-4a09-bd5d-3f001977cbfc
+
+liverun operates in three different modes depending on your development workflow:
 
 ### 1. Interpreter Mode
 
