@@ -80,7 +80,7 @@ bool ProcessManager::startProcess(const std::vector<std::string> &args) {
     argv.push_back(nullptr);
 
     execvp(argv[0], argv.data());
-    std::cerr << "Failed to start process\n";
+    livrn::Logger::error("Failed to start process");
     exit(1);
   }
 
