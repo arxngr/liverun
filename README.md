@@ -49,7 +49,6 @@ liverun interpret python script.py
 liverun interpret node app.js
 liverun interpret ruby server.rb
 ```
-Note: Ensure this is under the folder structure, if we put the file on any folder structure let say at root it will watch all of them
 
 ### 2. Compile Mode
 
