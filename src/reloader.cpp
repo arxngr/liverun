@@ -1,6 +1,7 @@
 #include "reloader.h"
 #include "logger.h"
 #include <chrono>
+#include <cstdlib>
 #include <iostream>
 #include <thread>
 
@@ -100,6 +101,7 @@ int Reloader::runCommandMode(const std::vector<std::string> &commands) {
       std::this_thread::sleep_for(
           std::chrono::milliseconds(Config::POLL_INTERVAL_MS));
 
+      bool failCompile = false;
       if (monitor.hasAnyFileChanged()) {
         livrn::Logger::info("Change detected. Restarting...");
         processManager.killChild();
@@ -107,14 +109,17 @@ int Reloader::runCommandMode(const std::vector<std::string> &commands) {
         for (size_t i = 0; i < lastIdx; ++i) {
           if (!compiler.compileSync(commands[i])) {
             livrn::Logger::error("Setup command failed: ", commands[i]);
+            failCompile = true;
             break;
           }
         }
 
+        if (failCompile)
+          continue;
+
         processManager.startCommand(runCmd);
       }
     }
-
   } catch (const std::exception &e) {
     livrn::Logger::error("Exception in custom mode: ", e.what());
     processManager.cleanup();

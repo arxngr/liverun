@@ -64,7 +64,6 @@ void ProcessManager::killCompileProcess() {
     compilePid = -1;
   }
 }
-
 bool ProcessManager::startProcess(const std::vector<std::string> &args) {
   if (args.empty())
     return false;

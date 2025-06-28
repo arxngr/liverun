@@ -5,7 +5,7 @@
 namespace livrn {
 namespace Config {
 const std::unordered_set<std::string> ALLOWED_COMMANDS = {
-    "make",    "go",    "gcc", "g++",  "clang",
+    "make",    "dlv",   "go",  "gcc",  "g++",  "clang",
     "clang++", "cargo", "npm", "yarn", "cmake"};
 
 const std::unordered_set<std::string> ALLOWED_EXTENSIONS = {
