@@ -50,5 +50,6 @@ public:
   MOCK_METHOD(bool, startBinary, (const std::string &binary));
   MOCK_METHOD(bool, startCommand, (const std::string &cmd));
   MOCK_METHOD(bool, isChildRunning, (), (const));
+  MOCK_METHOD(bool, authenticatedUser, (), ());
   MOCK_METHOD(void, cleanup, ());
 };

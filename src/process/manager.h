@@ -25,6 +25,7 @@ public:
                         const std::string &script);
   bool startBinary(const std::string &binary);
   bool startCommand(const std::string &cmd);
+  bool authenticatedUser();
 
   bool isChildRunning() const;
 };

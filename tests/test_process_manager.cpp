@@ -57,3 +57,14 @@ TEST_F(ProcessManagerTest, StartInterpreter) {
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
   processManager.killChild();
 }
+
+TEST_F(ProcessManagerTest, StartUnsafeCommand) {
+  MockProcessManager pm;
+
+  EXPECT_CALL(pm, authenticatedUser())
+      .Times(1)
+      .WillOnce(testing::Return(false));
+
+  bool started = pm.startBinary("npx kill-port 1323");
+  EXPECT_FALSE(started);
+}

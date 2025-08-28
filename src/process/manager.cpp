@@ -1,5 +1,12 @@
 #include "manager.h"
 #include "../logger.h"
+#include <fcntl.h>
+#include <unistd.h> // for geteuid on Linux/macOS
+
+#ifdef _WIN32
+#include <shellapi.h>
+#include <windows.h>
+#endif
 namespace livrn {
 
 void ProcessManager::killProcessGracefully(pid_t &pid,
@@ -97,8 +104,11 @@ bool ProcessManager::startBinary(const std::string &binary) {
 
 bool ProcessManager::startCommand(const std::string &cmd) {
   if (!livrn::Parser::isCommandSafe(cmd)) {
-    livrn::Logger::warn("Unsafe command, rejected");
-    return false;
+    livrn::Logger::warn("Unsafe command");
+    if (!authenticatedUser()) {
+      livrn::Logger::error("User authentication failed. Aborting.");
+      return false;
+    }
   }
 
   auto args = livrn::Command::parseCommand(cmd);
@@ -112,6 +122,54 @@ bool ProcessManager::isChildRunning() const {
   int status;
   pid_t result = waitpid(childPid, &status, WNOHANG);
   return result == 0;
+}
+
+bool ProcessManager::authenticatedUser() {
+#if defined(__unix__) || defined(__APPLE__)
+  if (geteuid() == 0) {
+    livrn::Logger::info("User is already root, no authentication needed.");
+    return true;
+  }
+
+  livrn::Logger::info(
+      "This command requires admin rights. Please authenticate...");
+
+  // Validate sudo privileges (prompts for password if needed)
+  int ret = system("sudo -v");
+  if (ret != 0) {
+    livrn::Logger::error("Authentication failed. Root privileges required.");
+    return false;
+  }
+
+  livrn::Logger::info("User authenticated successfully as root.");
+  return true;
+
+#elif _WIN32
+  BOOL isAdmin = FALSE;
+  PSID adminGroup;
+  SID_IDENTIFIER_AUTHORITY ntAuthority = SECURITY_NT_AUTHORITY;
+  if (!AllocateAndInitializeSid(&ntAuthority, 2, SECURITY_BUILTIN_DOMAIN_RID,
+                                DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0,
+                                &adminGroup)) {
+    livrn::Logger::error("Failed to allocate SID for admin check.");
+    return false;
+  }
+
+  CheckTokenMembership(NULL, adminGroup, &isAdmin);
+  FreeSid(adminGroup);
+
+  if (!isAdmin) {
+    livrn::Logger::error("User is not an administrator.");
+    return false;
+  }
+
+  livrn::Logger::info("User has administrator privileges.");
+  return true;
+
+#else
+  livrn::Logger::error("Unsupported platform for authentication.");
+  return false;
+#endif
 }
 
 } // namespace livrn
