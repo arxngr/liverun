@@ -22,7 +22,7 @@ A fast, lightweight hot reload tool for development workflows. liverun automatic
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/liverun.git
+git clone https://github.com/arxngr/liverun.git
 cd liverun
 
 # Build with CMake
